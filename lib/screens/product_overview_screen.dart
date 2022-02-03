@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:shop_app/providers/cart.dart';
+import 'package:shop_app/screens/cart_screen.dart';
+import 'package:shop_app/widgets/bage.dart';
 import '../widgets/products_grid.dart';
 
 enum FilterOption { favorite, all }
@@ -22,10 +26,31 @@ class _ProductOverviewScreenState extends State<ProductOverviewScreen> {
             bottom: Radius.circular(50),
           ),
         ),
-        title: const Text('MyShop'),
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Text('MyShop'),
+            Consumer<Cart>(
+              builder: (_, cart, chi) => Badge(
+                child: chi as Widget,
+                value: cart.itemCount.toString(),
+                color: Colors.red,
+              ),
+              child: IconButton(
+                icon: const Icon(
+                  Icons.shopping_cart,
+                ),
+                onPressed: () {
+                  Navigator.pushNamed(context, CartScreen.routName);
+                },
+              ),
+            ),
+          ],
+        ),
         centerTitle: true,
       ),
       body: ProductsGrid(showOnlyFavs: _showOnlyFavorite),
+
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.green,
         child: PopupMenuButton(
@@ -65,6 +90,7 @@ class _ProductOverviewScreenState extends State<ProductOverviewScreen> {
         ),
         onPressed: () {},
       ),
+
       //floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
   }
