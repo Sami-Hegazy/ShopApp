@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 
 class CartItem {
   final String id;
+  final String imgUrl;
   final String title;
   final int quantity;
   final double price;
 
   CartItem({
+    required this.imgUrl,
     required this.id,
     required this.title,
     required this.quantity,
@@ -15,7 +17,7 @@ class CartItem {
 }
 
 class Cart with ChangeNotifier {
-  final Map<String, CartItem> _items = {};
+  Map<String, CartItem> _items = {};
 
   Map<String, CartItem> get items {
     return {..._items};
@@ -28,22 +30,22 @@ class Cart with ChangeNotifier {
   double get totalAmount {
     var total = 0.0;
     _items.forEach((key, cartItem) {
-      total = cartItem.price * cartItem.quantity;
+      total += cartItem.price * cartItem.quantity;
     });
     return total;
   }
 
-  void addItem(String productId, String title, double price) {
+  void addItem(String productId, String title, double price, String imgUrl) {
     if (_items.containsKey(productId)) {
       //change quantity
       _items.update(
         productId,
         (existingCartItem) => CartItem(
-          id: existingCartItem.id,
-          title: existingCartItem.title,
-          quantity: existingCartItem.quantity + 1,
-          price: existingCartItem.price,
-        ),
+            id: existingCartItem.id,
+            title: existingCartItem.title,
+            quantity: existingCartItem.quantity + 1,
+            price: existingCartItem.price,
+            imgUrl: existingCartItem.imgUrl),
       );
     } else {
       _items.putIfAbsent(
@@ -53,9 +55,20 @@ class Cart with ChangeNotifier {
           title: title,
           quantity: 1,
           price: price,
+          imgUrl: imgUrl,
         ),
       );
     }
+    notifyListeners();
+  }
+
+  void removeItem(String productId) {
+    _items.remove(productId);
+    notifyListeners();
+  }
+
+  void clear() {
+    _items = {};
     notifyListeners();
   }
 }

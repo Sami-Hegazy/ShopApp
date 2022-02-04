@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shop_app/providers/cart.dart';
 import 'package:shop_app/screens/cart_screen.dart';
+import 'package:shop_app/widgets/app_drawer.dart';
 import 'package:shop_app/widgets/bage.dart';
 import '../widgets/products_grid.dart';
+import 'dart:math' as math;
 
 enum FilterOption { favorite, all }
 
@@ -48,7 +50,21 @@ class _ProductOverviewScreenState extends State<ProductOverviewScreen> {
           ],
         ),
         centerTitle: true,
+        leading: Builder(builder: (context) {
+          return Transform.rotate(
+            angle: 50 * math.pi / 180,
+            child: IconButton(
+              onPressed: () {
+                Scaffold.of(context).openDrawer();
+              },
+              icon: const Icon(
+                Icons.remove_red_eye,
+              ),
+            ),
+          );
+        }),
       ),
+      drawer: const AppDrawer(),
       body: ProductsGrid(showOnlyFavs: _showOnlyFavorite),
 
       floatingActionButton: FloatingActionButton(
