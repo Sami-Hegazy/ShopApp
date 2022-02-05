@@ -19,6 +19,8 @@ class CartItemW extends StatelessWidget {
     required this.imgUrl,
   }) : super(key: key);
 
+  static const face1 = '\u{1F62A}';
+
   @override
   Widget build(BuildContext context) {
     return Dismissible(
@@ -35,6 +37,37 @@ class CartItemW extends StatelessWidget {
         margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 4),
       ),
       direction: DismissDirection.endToStart,
+      confirmDismiss: (direction) {
+        return showDialog(
+            context: context,
+            builder: (ctx) {
+              return AlertDialog(
+                title: const Text('Remove $face1'),
+                content: const Text(
+                  'Do you want do Remove this Item?',
+                ),
+                actions: [
+                  TextButton(
+                    child: const Text("Cancel"),
+                    onPressed: () {
+                      Navigator.of(context).pop(false);
+                    },
+                  ),
+                  TextButton(
+                    child: const Text(
+                      "Continue",
+                      style: TextStyle(
+                        color: Colors.red,
+                      ),
+                    ),
+                    onPressed: () {
+                      Navigator.of(context).pop(true);
+                    },
+                  ),
+                ],
+              );
+            });
+      },
       onDismissed: (direction) {
         Provider.of<Cart>(context, listen: false).removeItem(productId);
       },
@@ -79,4 +112,35 @@ class CartItemW extends StatelessWidget {
       ),
     );
   }
+
+  // showAlertDialog(BuildContext context) {
+  //   // set up the buttons
+  //   Widget cancelButton = TextButton(
+  //     child: const Text("Cancel"),
+  //     onPressed: () {},
+  //   );
+  //   Widget continueButton = TextButton(
+  //     child: const Text("Continue"),
+  //     onPressed: () {},
+  //   );
+
+  //   // set up the AlertDialog
+  //   AlertDialog alert = AlertDialog(
+  //     title: const Text("AlertDialog"),
+  //     content: const Text(
+  //         "Would you like to continue learning how to use Flutter alerts?"),
+  //     actions: [
+  //       cancelButton,
+  //       continueButton,
+  //     ],
+  //   );
+
+  //   // show the dialog
+  //   showDialog(
+  //     context: context,
+  //     builder: (BuildContext context) {
+  //       return alert;
+  //     },
+  //   );
+  // }
 }
