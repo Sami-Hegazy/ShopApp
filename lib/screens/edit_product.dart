@@ -24,11 +24,39 @@ class _EditProductScreenState extends State<EditProductScreen> {
     price: 0,
     imageUrl: '',
   );
+  var _initValue = {
+    'title': '',
+    'description': '',
+    'price': '',
+    'imageUrl': '',
+  };
+  var _isInit = true;
 
   @override
   void initState() {
     _imgUrlFocusNode.addListener(_updateImageUrl);
     super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    if (_isInit) {
+      final productId = ModalRoute.of(context)?.settings.arguments as String;
+
+      _editedProduct =
+          Provider.of<Products>(context, listen: false).findByID(productId);
+
+      _initValue = {
+        'title': _editedProduct.title,
+        'description': _editedProduct.description,
+        'price': _editedProduct.price.toString(),
+        //'imageUrl': _editedProduct.imageUrl,
+        'imageUrl': ''
+      };
+      _imageUrlController.text = _editedProduct.imageUrl;
+    }
+    _isInit = false;
+    super.didChangeDependencies();
   }
 
   @override
@@ -49,12 +77,18 @@ class _EditProductScreenState extends State<EditProductScreen> {
   }
 
   void _saveForm() {
-    final _isValidate = _form.currentState!.validate();
-    if (_isValidate) {
+    final isValidate = _form.currentState!.validate();
+    if (!isValidate) {
       return;
     }
     _form.currentState!.save();
-    Provider.of<Products>(context, listen: false).addProduct(_editedProduct);
+
+    if (_editedProduct.id != '') {
+      Provider.of<Products>(context, listen: false)
+          .updateProduct(_editedProduct.id, _editedProduct);
+    } else {
+      Provider.of<Products>(context, listen: false).addProduct(_editedProduct);
+    }
     Navigator.of(context).pop();
   }
 
@@ -77,6 +111,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
           child: ListView(
             children: [
               TextFormField(
+                initialValue: _initValue['title'],
                 decoration: InputDecoration(
                   labelText: 'Title',
                   border: OutlineInputBorder(
@@ -94,6 +129,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                     description: _editedProduct.description,
                     price: _editedProduct.price,
                     imageUrl: _editedProduct.imageUrl,
+                    isFavourite: _editedProduct.isFavourite,
                   );
                 },
                 validator: (value) {
@@ -105,6 +141,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
               ),
               const SizedBox(height: 20),
               TextFormField(
+                initialValue: _initValue['price'],
                 decoration: InputDecoration(
                   labelText: 'Price',
                   border: OutlineInputBorder(
@@ -124,6 +161,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                     description: _editedProduct.description,
                     price: double.parse(val!),
                     imageUrl: _editedProduct.imageUrl,
+                    isFavourite: _editedProduct.isFavourite,
                   );
                 },
                 validator: (value) {
@@ -141,6 +179,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
               ),
               const SizedBox(height: 20),
               TextFormField(
+                initialValue: _initValue['description'],
                 decoration: InputDecoration(
                   labelText: 'Description',
                   border: OutlineInputBorder(
@@ -157,6 +196,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                     description: val.toString(),
                     price: _editedProduct.price,
                     imageUrl: _editedProduct.imageUrl,
+                    isFavourite: _editedProduct.isFavourite,
                   );
                 },
                 validator: (value) {
@@ -186,7 +226,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                     child: _imageUrlController.text.isEmpty
                         ? const Center(child: Text('Enter Image URL'))
                         : FittedBox(
-                            child: Image.network(
+                            child: Image.asset(
                               _imageUrlController.text,
                               fit: BoxFit.cover,
                             ),
@@ -214,19 +254,20 @@ class _EditProductScreenState extends State<EditProductScreen> {
                           description: _editedProduct.description,
                           price: _editedProduct.price,
                           imageUrl: val.toString(),
+                          isFavourite: _editedProduct.isFavourite,
                         );
                       },
                       validator: (value) {
                         if (value!.isEmpty) {
                           return 'Please enter an image Url';
                         }
-                        if (!value.startsWith('http') &&
-                                !value.startsWith('https') ||
-                            !value.endsWith('.jpg') &&
-                                !value.endsWith('.png') &&
-                                !value.endsWith('jpeg')) {
-                          return 'Please enter a valid URL';
-                        }
+                        // if (!value.startsWith('http') &&
+                        //         !value.startsWith('https') ||
+                        //     !value.endsWith('.jpg') &&
+                        //         !value.endsWith('.png') &&
+                        //         !value.endsWith('jpeg')) {
+                        //   return 'Please enter a valid URL';
+                        // }
                         return null;
                       },
                     ),
