@@ -44,7 +44,7 @@ class CartItemW extends StatelessWidget {
               return AlertDialog(
                 title: const Text('Remove $face1'),
                 content: const Text(
-                  'Do you want do Remove this Item?',
+                  'Are you sure you want to delete this Item?',
                 ),
                 actions: [
                   TextButton(
@@ -79,7 +79,7 @@ class CartItemW extends StatelessWidget {
             leading: CircleAvatar(
               maxRadius: 30,
               backgroundColor: Theme.of(context).colorScheme.primary,
-              backgroundImage: ExactAssetImage(imgUrl),
+              backgroundImage: NetworkImage(imgUrl),
             ),
             title: Text(
               title,
